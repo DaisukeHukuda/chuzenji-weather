@@ -253,8 +253,8 @@ describe("buildColumns LIMITS 切り詰め", () => {
   it("week は最大16列に切り詰める", () => {
     expect(buildColumns(longDaily, "week")).toHaveLength(16);
   });
-  it("1d は最大7列に切り詰める", () => {
-    expect(buildColumns(longDaily, "1d")).toHaveLength(7);
+  it("1d は最大14列(2週間)に切り詰める", () => {
+    expect(buildColumns(longDaily, "1d")).toHaveLength(14);
   });
   it("1h は48時間超でも最大48列に切り詰める", () => {
     // twoDayHourly は48時間ちょうど。49時間以上のフィクスチャで確認する

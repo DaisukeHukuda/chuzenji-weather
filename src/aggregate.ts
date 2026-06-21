@@ -3,7 +3,9 @@ import type { ForecastResponse, Column } from "./types";
 import type { Granularity } from "./config";
 import { hourLabel, dayKey, dayLabel, sunLabel, parseLocalIso } from "./datetime";
 
-const LIMITS = { hourly1h: 48, days3h: 5, daysHalf: 7, days1d: 7, daysWeek: 16 };
+// days1d=14: 1日表示は2週間先まで（Open-Meteoは forecast_days=16 を取得しているので取得可能。
+// ただし7日より先は予報の信頼度が下がる参考値）。
+const LIMITS = { hourly1h: 48, days3h: 5, daysHalf: 7, days1d: 14, daysWeek: 16 };
 
 function max(nums: number[]): number | null {
   const v = nums.filter((n) => n != null && !Number.isNaN(n));

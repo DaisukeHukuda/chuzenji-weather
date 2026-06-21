@@ -1,7 +1,8 @@
 :root { --bg:#fff; --ink:#111; --muted:#888; --line:#e5e7eb; --accent:#2563eb; }
 * { box-sizing: border-box; }
-html, body { height: 100%; }
-body { margin:0; font-family: system-ui, -apple-system, "Hiragino Sans", sans-serif;
+/* 画面を固定し、縦スワイプでページが動かない/バウンスしないようにする */
+html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+body { margin:0; position: fixed; inset: 0; font-family: system-ui, -apple-system, "Hiragino Sans", sans-serif;
   color: var(--ink); background:#f3f4f6; }
 
 /* 画面全体（縦も）を使う: ヘッダー(情報源は上)＋表＋タブ(下) の縦フレックス */
@@ -34,7 +35,8 @@ body { margin:0; font-family: system-ui, -apple-system, "Hiragino Sans", sans-se
   text-align:center; white-space:pre-line; line-height:1.15; padding:0 4px;
   font-size:12px; color:#555; border-bottom:1px solid #f1f1f1; }
 .label-cell.corner { flex:0 0 26px; min-height:0; background:#f3f4f6; border-bottom:1px solid var(--line); }
-.scroller { flex:1; min-height:0; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling: touch; }
+.scroller { flex:1; min-height:0; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain; touch-action: pan-x; }
 .grid { display:flex; flex-direction:column; height:100%; width:max-content; min-width:100%; }
 .day-row { flex:0 0 26px; display:flex; }
 .day-cell { display:flex; align-items:center; justify-content:center;
