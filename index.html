@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <title>中禅寺湖 天気</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <main id="app">
+      <header class="app-header">
+        <div class="title-row">
+          <h1>中禅寺湖</h1>
+          <span class="elev">標高1269m</span>
+        </div>
+        <div class="status-row">
+          <span id="auto">🔄 自動更新 5分ごと</span>
+          <span id="updated">最終 --:--</span>
+          <span id="next">次 -:--</span>
+          <button id="refresh-btn" type="button">更新</button>
+        </div>
+        <div id="stale" class="stale hidden">最新の取得に失敗。表示は古い可能性があります。</div>
+      </header>
+
+      <nav class="tabs" id="tabs">
+        <button data-g="1h" class="active">1時間</button>
+        <button data-g="3h">3時間</button>
+        <button data-g="halfday">半日</button>
+        <button data-g="1d">1日</button>
+        <button data-g="week">週</button>
+      </nav>
+
+      <section id="matrix-host"></section>
+
+      <footer class="source">出典: Open-Meteo（JMA・標高補正）</footer>
+    </main>
+    <script type="module" src="/src/app.ts"></script>
+  </body>
+</html>

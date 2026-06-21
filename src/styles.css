@@ -1,0 +1,36 @@
+:root { --bg:#fff; --ink:#111; --muted:#888; --line:#e5e7eb; --accent:#2563eb; }
+* { box-sizing: border-box; }
+body { margin:0; font-family: system-ui, -apple-system, "Hiragino Sans", sans-serif;
+  color: var(--ink); background:#f3f4f6; }
+#app { max-width: 520px; margin: 0 auto; background: var(--bg); min-height:100vh; padding: 10px 8px 24px; }
+.app-header { padding: 4px 4px 8px; }
+.title-row { display:flex; align-items:baseline; gap:8px; }
+.title-row h1 { font-size: 20px; margin:0; }
+.elev { font-size: 11px; color: var(--muted); }
+.status-row { display:flex; align-items:center; gap:8px; font-size: 11px; color: var(--muted); margin-top:4px; }
+.status-row button { margin-left:auto; font-size:11px; padding:3px 10px; border:1px solid var(--line);
+  background:#fff; border-radius:6px; }
+.stale { font-size:11px; color:#b45309; background:#fffbeb; border:1px solid #fde68a;
+  border-radius:6px; padding:4px 8px; margin-top:6px; }
+.hidden { display:none; }
+.tabs { display:flex; gap:3px; margin:10px 0 8px; }
+.tabs button { flex:1; font-size:12px; padding:6px 0; border:none; border-radius:6px;
+  background:#eef2f7; color:#333; }
+.tabs button.active { background: var(--accent); color:#fff; }
+
+/* Windfinder風マトリクス: 左ラベル固定 + 横スクロール */
+.matrix { display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+.label-col { flex:0 0 64px; border-right:2px solid var(--line); background:#fafafa; }
+.label-cell { height:26px; display:flex; align-items:center; padding:0 6px;
+  font-size:10px; color:#666; border-bottom:1px solid #f1f1f1; }
+.label-cell.corner { height:22px; background:#f3f4f6; border-bottom:1px solid var(--line); }
+.scroller { overflow-x:auto; -webkit-overflow-scrolling: touch; flex:1; }
+.grid { display:inline-block; min-width:100%; }
+.day-row { display:flex; }
+.day-cell { height:22px; display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:700; color:#333; background:#f3f4f6;
+  border-left:1px solid #e5e7eb; border-bottom:1px solid var(--line); }
+.data-row { display:flex; }
+.data-cell { flex:0 0 44px; height:26px; display:flex; align-items:center; justify-content:center;
+  font-size:11px; border-bottom:1px solid #f1f1f1; border-left:1px solid #f6f6f6; }
+.source { font-size:9px; color:#aaa; text-align:right; margin-top:8px; }

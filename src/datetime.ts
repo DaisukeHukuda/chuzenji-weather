@@ -1,0 +1,43 @@
+// src/datetime.ts
+export interface LocalParts {
+  y: number; mo: number; d: number; h: number; mi: number;
+}
+
+const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
+
+export function parseLocalIso(s: string): LocalParts {
+  const [date, time = "00:00"] = s.split("T");
+  const [y, mo, d] = date!.split("-").map(Number);
+  const [h, mi] = time.split(":").map(Number);
+  return { y: y!, mo: mo!, d: d!, h: h!, mi: mi! };
+}
+
+export function hourLabel(s: string): string {
+  return String(parseLocalIso(s).h).padStart(2, "0");
+}
+
+export function dayKey(s: string): string {
+  const { y, mo, d } = parseLocalIso(s);
+  return `${y}-${String(mo).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+}
+
+export function dayLabel(s: string): string {
+  const { y, mo, d } = parseLocalIso(s);
+  const wd = WEEKDAYS[new Date(y, mo - 1, d).getDay()];
+  return `${mo}/${d}（${wd}）`;
+}
+
+// 残りミリ秒を M:SS 形式へ（負値は 0:00 に丸める）
+export function formatCountdown(remainingMs: number): string {
+  const totalSec = Math.max(0, Math.floor(remainingMs / 1000));
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+export function sunLabel(sunrise: string | null, sunset: string | null): string | null {
+  if (!sunrise || !sunset) return null;
+  const r = parseLocalIso(sunrise);
+  const s = parseLocalIso(sunset);
+  return `${r.h}:${String(r.mi).padStart(2, "0")} / ${s.h}:${String(s.mi).padStart(2, "0")}`;
+}
