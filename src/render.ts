@@ -35,7 +35,7 @@ const ROWS: RowDef[] = [
     },
   },
   { key: "uv", label: "UV", cell: (c) => ({ text: fmt(c.uv) }) },
-  { key: "sun", label: "日の出/入", cell: (c) => ({ text: c.sunLabel ?? "—" }) },
+  { key: "sun", label: "日の出\n日の入", cell: (c) => ({ text: c.sunLabel ?? "—" }) },
 ];
 
 export function renderMatrix(host: HTMLElement, cols: Column[]): void {
@@ -66,7 +66,7 @@ export function renderMatrix(host: HTMLElement, cols: Column[]): void {
   grid.className = "grid";
 
   // 日付見出しバンド: 同じ group の列をまとめて1セルにする
-  const CELL_W = 44; // .data-cell の幅(px)と一致させる
+  const CELL_W = 56; // .data-cell の幅(px)と一致させる
   const dayRow = document.createElement("div");
   dayRow.className = "day-row";
   let gi = 0;
@@ -93,12 +93,17 @@ export function renderMatrix(host: HTMLElement, cols: Column[]): void {
       cellEl.className = "data-cell";
       cellEl.setAttribute("data-col", "");
       const v = r.cell(c);
-      cellEl.textContent = v.text;
       if (v.bg) cellEl.style.background = v.bg;
       if (v.fg) cellEl.style.color = v.fg;
       if (v.rotate != null) {
-        cellEl.style.display = "inline-block";
-        cellEl.style.transform = `rotate(${v.rotate}deg)`;
+        // 矢印はセル中央を保ったまま内側の要素だけ回転させる
+        const arrow = document.createElement("span");
+        arrow.className = "arrow";
+        arrow.textContent = v.text;
+        arrow.style.transform = `rotate(${v.rotate}deg)`;
+        cellEl.appendChild(arrow);
+      } else {
+        cellEl.textContent = v.text;
       }
       rowEl.appendChild(cellEl);
     }

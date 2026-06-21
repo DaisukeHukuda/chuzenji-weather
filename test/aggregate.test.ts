@@ -42,7 +42,7 @@ describe("buildColumns 1h", () => {
     expect(cols[0]!.temp).toBe(10);
     expect(cols[0]!.windDirDeg).toBe(0);
     expect(cols[0]!.group).toBe("6/21（日）");
-    expect(cols[0]!.sunLabel).toBe("4:30 / 19:05");
+    expect(cols[0]!.sunLabel).toBe("4:30\n19:05");
   });
 });
 
@@ -81,7 +81,7 @@ describe("buildColumns 1d / week", () => {
     expect(d[0]!.tempMax).toBe(18);
     expect(d[0]!.tempMin).toBe(9);
     expect(d[0]!.windDirDeg).toBe(90);
-    expect(d[0]!.sunLabel).toBe("4:30 / 19:05");
+    expect(d[0]!.sunLabel).toBe("4:30\n19:05");
     expect(d[0]!.group).toBe("2026年6月");
     const w = buildColumns(fixture, "week");
     expect(w).toHaveLength(2);
@@ -213,11 +213,11 @@ describe("buildColumns 1h 複数日", () => {
     expect(day1.group).toBe("6/21（日）");
     expect(day2.group).toBe("6/22（月）");
     // sunLabel は各日の sunrise/sunset から
-    expect(day1.sunLabel).toBe("4:30 / 19:05");
-    expect(day2.sunLabel).toBe("5:00 / 18:40");
+    expect(day1.sunLabel).toBe("4:30\n19:05");
+    expect(day2.sunLabel).toBe("5:00\n18:40");
     // 2日目末尾(23時)も2日目のラベル
     expect(cols[47]!.group).toBe("6/22（月）");
-    expect(cols[47]!.sunLabel).toBe("5:00 / 18:40");
+    expect(cols[47]!.sunLabel).toBe("5:00\n18:40");
   });
 });
 

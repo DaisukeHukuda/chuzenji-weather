@@ -35,9 +35,10 @@ export function formatCountdown(remainingMs: number): string {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
+// 日の出/日の入りを2段表示（上段=日の出, 下段=日の入り）。スラッシュは使わず改行区切り。
 export function sunLabel(sunrise: string | null, sunset: string | null): string | null {
   if (!sunrise || !sunset) return null;
   const r = parseLocalIso(sunrise);
   const s = parseLocalIso(sunset);
-  return `${r.h}:${String(r.mi).padStart(2, "0")} / ${s.h}:${String(s.mi).padStart(2, "0")}`;
+  return `${r.h}:${String(r.mi).padStart(2, "0")}\n${s.h}:${String(s.mi).padStart(2, "0")}`;
 }

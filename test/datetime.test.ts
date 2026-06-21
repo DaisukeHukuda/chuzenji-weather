@@ -21,8 +21,8 @@ describe("datetime", () => {
     // 2026-06-22 は月曜
     expect(dayLabel("2026-06-22T00:00")).toBe("6/22（月）");
   });
-  it("sunLabel は H:MM / H:MM", () => {
-    expect(sunLabel("2026-06-21T04:30", "2026-06-21T19:05")).toBe("4:30 / 19:05");
+  it("sunLabel は 日の出・日の入りを改行2段で返す", () => {
+    expect(sunLabel("2026-06-21T04:30", "2026-06-21T19:05")).toBe("4:30\n19:05");
   });
   it("formatCountdown は残りミリ秒を M:SS へ", () => {
     expect(formatCountdown(252000)).toBe("4:12");
