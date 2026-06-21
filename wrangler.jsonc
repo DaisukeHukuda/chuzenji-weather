@@ -1,0 +1,9 @@
+{
+  // Cloudflare Workers (静的アセット配信) 設定。
+  // ビルド成果物 dist/ をそのまま静的サイトとして配信する（サーバコードなし）。
+  "name": "chuzenji-weather",
+  "compatibility_date": "2025-01-01",
+  "assets": {
+    "directory": "./dist"
+  }
+}
