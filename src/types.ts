@@ -45,5 +45,6 @@ export interface Column {
   precip: number | null;
   precipProb: number | null;
   cloud: number | null;
-  uv: number | null;
+  uv: number | null; // 代表UV（hourly系=その時刻/バケット最大, daily=日最大）
+  uvAvg: number | null; // 平均UV（バケット平均 / 日平均）。UVセルに括弧で併記する
 }

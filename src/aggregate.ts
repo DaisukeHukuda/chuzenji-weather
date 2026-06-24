@@ -19,6 +19,11 @@ function avg(nums: number[]): number | null {
   const v = nums.filter((n) => n != null && !Number.isNaN(n));
   return v.length ? Math.round(v.reduce((a, b) => a + b, 0) / v.length) : null;
 }
+// 平均を小数1桁で（UVの平均表示用）
+function avg1(nums: number[]): number | null {
+  const v = nums.filter((n) => n != null && !Number.isNaN(n));
+  return v.length ? Math.round((v.reduce((a, b) => a + b, 0) / v.length) * 10) / 10 : null;
+}
 
 // daily の日の出/日の入りを dayKey で引けるMapに
 function sunByDay(res: ForecastResponse): Map<string, string | null> {
@@ -27,6 +32,19 @@ function sunByDay(res: ForecastResponse): Map<string, string | null> {
     m.set(dayKey(t + "T00:00"), sunLabel(res.daily.sunrise[i] ?? null, res.daily.sunset[i] ?? null));
   });
   return m;
+}
+
+// hourly の uv_index を日ごとに平均（小数1桁）。daily表示のUV平均に使う。
+function uvAvgByDay(res: ForecastResponse): Map<string, number | null> {
+  const buckets = new Map<string, number[]>();
+  res.hourly.time.forEach((t, i) => {
+    const k = dayKey(t);
+    if (!buckets.has(k)) buckets.set(k, []);
+    buckets.get(k)!.push(res.hourly.uv_index[i]!);
+  });
+  const out = new Map<string, number | null>();
+  buckets.forEach((arr, k) => out.set(k, avg1(arr)));
+  return out;
 }
 
 // hourly の指定インデックス範囲から1列を作る
@@ -58,6 +76,7 @@ function hourlyBucket(
     precipProb: max(at(h.precipitation_probability)),
     cloud: avg(at(h.cloud_cover)),
     uv: max(at(h.uv_index)),
+    uvAvg: avg1(at(h.uv_index)),
   };
 }
 
@@ -103,6 +122,7 @@ function buildHalfDay(res: ForecastResponse, sun: Map<string, string | null>): C
 
 function buildDaily(res: ForecastResponse, days: number): Column[] {
   const d = res.daily;
+  const uvAvg = uvAvgByDay(res); // hourlyから日ごとのUV平均
   const n = Math.min(d.time.length, days);
   const cols: Column[] = [];
   for (let i = 0; i < n; i++) {
@@ -124,6 +144,7 @@ function buildDaily(res: ForecastResponse, days: number): Column[] {
       precipProb: d.precipitation_probability_max[i] ?? null,
       cloud: null,
       uv: d.uv_index_max[i] ?? null,
+      uvAvg: uvAvg.get(dayKey(iso)) ?? null,
     });
   }
   return cols;

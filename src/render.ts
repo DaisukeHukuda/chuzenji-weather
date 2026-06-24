@@ -2,7 +2,7 @@
 import type { Column } from "./types";
 import { weatherIcon } from "./weather-code";
 import { compass16, arrowRotation } from "./wind";
-import { tempColor, gustColor } from "./colors";
+import { tempColor, windColor } from "./colors";
 
 interface RowDef {
   key: string;
@@ -13,16 +13,33 @@ interface RowDef {
 const fmt = (v: number | null, suffix = ""): string =>
   v == null ? "—" : `${v}${suffix}`;
 
+// 小数1桁に丸めた数値（整数も小数1桁で）
+const round1 = (v: number): number => Math.round(v * 10) / 10;
+
+// UVセル: 代表値（最大）に、平均が異なる場合だけ括弧で平均を併記
+function uvText(uv: number | null, uvAvg: number | null): string {
+  if (uv == null) return "—";
+  const m = round1(uv);
+  if (uvAvg == null) return String(m);
+  const a = round1(uvAvg);
+  return a === m ? String(m) : `${m}（${a}）`;
+}
+
 const ROWS: RowDef[] = [
   { key: "time", label: "時刻", cell: (c) => ({ text: c.timeLabel }) },
   { key: "weather", label: "天気", cell: (c) => ({ text: weatherIcon(c.weatherCode) }) },
   { key: "windDir", label: "風向", cell: (c) => ({ text: "↑", rotate: arrowRotation(c.windDirDeg) }) },
   { key: "windDirName", label: "", cell: (c) => ({ text: compass16(c.windDirDeg) }) },
-  { key: "windSpeed", label: "風速 m/s", cell: (c) => ({ text: fmt(c.windSpeed) }) },
   {
-    key: "gust", label: "最大 m/s",
-    cell: (c) => { const col = gustColor(c.gust); return { text: fmt(c.gust), bg: col.bg, fg: col.fg }; },
+    key: "windSpeed", label: "風速 m/s",
+    cell: (c) => {
+      if (c.windSpeed == null) return { text: "—" };
+      const v = round1(c.windSpeed);
+      const col = windColor(v);
+      return { text: v.toFixed(1), bg: col.bg, fg: col.fg };
+    },
   },
+  { key: "gust", label: "最大 m/s", cell: (c) => ({ text: fmt(c.gust) }) },
   { key: "precip", label: "降水 mm", cell: (c) => ({ text: fmt(c.precip) }) },
   { key: "precipProb", label: "降水 %", cell: (c) => ({ text: fmt(c.precipProb, "%") }) },
   { key: "cloud", label: "雲量 %", cell: (c) => ({ text: fmt(c.cloud, "%") }) },
@@ -34,7 +51,7 @@ const ROWS: RowDef[] = [
       return { text, bg: col.bg, fg: col.fg };
     },
   },
-  { key: "uv", label: "UV", cell: (c) => ({ text: fmt(c.uv) }) },
+  { key: "uv", label: "UV", cell: (c) => ({ text: uvText(c.uv, c.uvAvg) }) },
   { key: "sun", label: "日の出\n日の入", cell: (c) => ({ text: c.sunLabel ?? "—" }) },
 ];
 

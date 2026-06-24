@@ -9,14 +9,14 @@ const cols: Column[] = [
     timeLabel: "09", group: "6/21（日）", sunLabel: "4:30 / 19:05",
     weatherCode: 2, temp: 16, tempMax: null, tempMin: null,
     windSpeed: 1, windDirDeg: 0, gust: 3, precip: 0.7,
-    precipProb: 20, cloud: 40, uv: 3,
+    precipProb: 20, cloud: 40, uv: 3, uvAvg: 3,
   },
   {
     startIso: "2026-06-21T10:00",
     timeLabel: "10", group: "6/21（日）", sunLabel: "4:30 / 19:05",
     weatherCode: 61, temp: 19, tempMax: null, tempMin: null,
     windSpeed: 3, windDirDeg: 90, gust: 8, precip: 1.1,
-    precipProb: 70, cloud: 90, uv: 2,
+    precipProb: 70, cloud: 90, uv: 2, uvAvg: 2,
   },
 ];
 

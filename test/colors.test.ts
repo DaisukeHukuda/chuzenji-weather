@@ -1,6 +1,6 @@
 // test/colors.test.ts
 import { describe, it, expect } from "vitest";
-import { tempColor, gustColor } from "../src/colors";
+import { tempColor, windColor } from "../src/colors";
 
 describe("tempColor", () => {
   it("低温は寒色、高温は暖色のbgを返す", () => {
@@ -15,14 +15,22 @@ describe("tempColor", () => {
   });
 });
 
-describe("gustColor", () => {
-  it("弱風と強風で色が異なる", () => {
-    expect(gustColor(2).bg).not.toBe(gustColor(15).bg);
+describe("windColor", () => {
+  it("整数の階級ごとに色が変わる（0m台と1m台で異なる）", () => {
+    expect(windColor(0.5).bg).not.toBe(windColor(1.2).bg);
   });
-  it("強風(>=12)は白文字", () => {
-    expect(gustColor(15).fg).toBe("#fff");
+  it("同じ階級内（小数違い）は同色（2.1も2.9も2m台）", () => {
+    expect(windColor(2.1).bg).toBe(windColor(2.9).bg);
+    expect(windColor(2.9).bg).not.toBe(windColor(3.0).bg);
+  });
+  it("弱風は黒文字、強風(>=6m台)は白文字", () => {
+    expect(windColor(0).fg).toBe("#111");
+    expect(windColor(7).fg).toBe("#fff");
+  });
+  it("8m台以上は同色に丸める", () => {
+    expect(windColor(8).bg).toBe(windColor(20).bg);
   });
   it("null は transparent", () => {
-    expect(gustColor(null).bg).toBe("transparent");
+    expect(windColor(null).bg).toBe("transparent");
   });
 });
