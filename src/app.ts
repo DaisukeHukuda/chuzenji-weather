@@ -85,6 +85,62 @@ tabsEl.querySelectorAll("button").forEach((btn) => {
 
 refreshBtn.addEventListener("click", () => controller.refreshNow());
 
+// 下スワイプでページ全体を更新（プル・トゥ・リフレッシュ）
+function setupPullToRefresh(): void {
+  const appEl = document.getElementById("app")!;
+  const ptrText = document.getElementById("ptr-text")!;
+  const THRESHOLD = 70; // この距離以上引いて離すと更新
+  const MAX = 110; // 引ける最大距離
+  let startY = 0, startX = 0, dist = 0;
+  let decided = false, pulling = false, refreshing = false;
+
+  const reset = (): void => {
+    appEl.style.transition = "transform .2s";
+    appEl.style.transform = "";
+    ptrText.textContent = "↓ 引っ張って更新";
+    decided = false; pulling = false; dist = 0;
+  };
+
+  appEl.addEventListener("touchstart", (e) => {
+    if (refreshing) return;
+    startY = e.touches[0]!.clientY;
+    startX = e.touches[0]!.clientX;
+    decided = false; pulling = false; dist = 0;
+  }, { passive: true });
+
+  appEl.addEventListener("touchmove", (e) => {
+    if (refreshing) return;
+    const dy = e.touches[0]!.clientY - startY;
+    const dx = e.touches[0]!.clientX - startX;
+    if (!decided) {
+      if (Math.abs(dy) < 6 && Math.abs(dx) < 6) return;
+      decided = true;
+      // 下向きで、横移動より縦移動が大きいときだけプル開始（横スクロールを邪魔しない）
+      pulling = dy > 0 && Math.abs(dy) > Math.abs(dx);
+    }
+    if (!pulling) return;
+    e.preventDefault();
+    dist = Math.min(MAX, dy * 0.5);
+    appEl.style.transition = "none";
+    appEl.style.transform = `translateY(${dist}px)`;
+    ptrText.textContent = dist >= THRESHOLD ? "離して更新" : "↓ 引っ張って更新";
+  }, { passive: false });
+
+  appEl.addEventListener("touchend", () => {
+    if (refreshing || !pulling) { reset(); return; }
+    if (dist >= THRESHOLD) {
+      refreshing = true;
+      appEl.style.transition = "transform .2s";
+      appEl.style.transform = "translateY(44px)";
+      ptrText.textContent = "更新中…";
+      void load().finally(() => { refreshing = false; reset(); });
+    } else {
+      reset();
+    }
+  });
+}
+
+setupPullToRefresh();
 setInterval(updateCountdown, 1000);
 
 controller.start();
