@@ -39,11 +39,11 @@ body { margin:0; position: fixed; inset: 0; font-family: system-ui, -apple-syste
 /* Windfinder風マトリクス: 左ラベル固定 + 横スクロール、縦は画面いっぱい。項目は中央揃え。 */
 .matrix { flex: 1; display:flex; min-height: 0;
   border:1px solid var(--line); border-radius:8px; overflow:hidden; }
-.label-col { flex:0 0 72px; display:flex; flex-direction:column;
+.label-col { flex:0 0 84px; display:flex; flex-direction:column;
   border-right:2px solid var(--line); background:#fafafa; }
 .label-cell { flex:1 1 0; min-height:30px; display:flex; align-items:center; justify-content:center;
-  text-align:center; white-space:pre-line; line-height:1.15; padding:0 4px;
-  font-size:12px; color:#555; border-bottom:1px solid #f1f1f1; }
+  text-align:center; white-space:pre-line; line-height:1.2; padding:0 4px;
+  font-size:14px; font-weight:600; color:#444; border-bottom:1px solid #f1f1f1; }
 .scroller { flex:1; min-height:0; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain; touch-action: pan-x; }
 .grid { display:flex; flex-direction:column; height:100%; width:max-content; min-width:100%; }
