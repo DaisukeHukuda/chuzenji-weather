@@ -43,6 +43,7 @@ function hourlyBucket(
     if (h.wind_speed_10m[i]! > best) { best = h.wind_speed_10m[i]!; dirDeg = h.wind_direction_10m[i]!; }
   }
   return {
+    startIso: firstTime,
     timeLabel,
     group: dayLabel(firstTime),
     sunLabel: sun.get(dayKey(firstTime)) ?? null,
@@ -108,6 +109,7 @@ function buildDaily(res: ForecastResponse, days: number): Column[] {
     const iso = d.time[i]! + "T00:00";
     const p = parseLocalIso(iso);
     cols.push({
+      startIso: iso,
       timeLabel: dayLabel(iso),
       group: `${p.y}年${p.mo}月`,
       sunLabel: sunLabel(d.sunrise[i] ?? null, d.sunset[i] ?? null),

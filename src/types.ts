@@ -30,6 +30,8 @@ export interface ForecastResponse {
 
 // マトリクス1列分のビューモデル（hourly系/daily系で共通）
 export interface Column {
+  startIso: string; // この列のスロット開始ローカルISO（"2026-06-21T09:00"）。現在時刻判定・並べ替えに使う
+  isPast?: boolean; // 現在より前の(過ぎた)スロットか。app側で現在時刻から付与する
   timeLabel: string; // 列見出し（"09" / "午前" / "6/21(日)"）
   group: string; // 日や月の区切り見出し（"6/21（日）" / "2026年6月"）
   sunLabel: string | null; // 日の出/日の入り（"5:30 / 19:00"）

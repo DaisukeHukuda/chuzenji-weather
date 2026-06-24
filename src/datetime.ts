@@ -35,6 +35,17 @@ export function formatCountdown(remainingMs: number): string {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
+// 列の開始ISO配列(昇順)と現在ISOから、「今いるスロット」のindexを返す（該当なしは-1）。
+// = 開始が現在以下である最後の列。これより前のindexは過去、これより後は未来。
+// 同形式・ゼロ詰めのローカルISO文字列同士なので辞書順比較で時系列比較になる。
+export function currentSlotIndex(startIsos: string[], nowIso: string): number {
+  let curr = -1;
+  for (let i = 0; i < startIsos.length; i++) {
+    if (startIsos[i]! <= nowIso) curr = i;
+  }
+  return curr;
+}
+
 // 日の出/日の入りを2段表示（上段=日の出, 下段=日の入り）。スラッシュは使わず改行区切り。
 export function sunLabel(sunrise: string | null, sunset: string | null): string | null {
   if (!sunrise || !sunset) return null;

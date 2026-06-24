@@ -1,6 +1,6 @@
 // test/datetime.test.ts
 import { describe, it, expect } from "vitest";
-import { parseLocalIso, hourLabel, dayKey, dayLabel, sunLabel, formatCountdown } from "../src/datetime";
+import { parseLocalIso, hourLabel, dayKey, dayLabel, sunLabel, formatCountdown, currentSlotIndex } from "../src/datetime";
 
 describe("datetime", () => {
   it("parseLocalIso は年月日時分を返す", () => {
@@ -33,5 +33,20 @@ describe("datetime", () => {
     expect(formatCountdown(0)).toBe("0:00");
     expect(formatCountdown(-1)).toBe("0:00");
     expect(formatCountdown(-9999)).toBe("0:00");
+  });
+  it("currentSlotIndex は 開始が現在以下である最後の列のindexを返す", () => {
+    const slots = ["2026-06-21T00:00", "2026-06-21T01:00", "2026-06-21T02:00", "2026-06-21T03:00"];
+    // 02:30 は 02:00 のスロット内 → index 2
+    expect(currentSlotIndex(slots, "2026-06-21T02:30")).toBe(2);
+    // ちょうど境界 01:00 は index 1
+    expect(currentSlotIndex(slots, "2026-06-21T01:00")).toBe(1);
+    // 全スロットより前 → -1
+    expect(currentSlotIndex(slots, "2026-06-20T23:00")).toBe(-1);
+    // 全スロットより後 → 最後のindex
+    expect(currentSlotIndex(slots, "2026-06-21T09:00")).toBe(3);
+  });
+  it("currentSlotIndex は日単位のスロットでも機能する", () => {
+    const days = ["2026-06-21T00:00", "2026-06-22T00:00", "2026-06-23T00:00"];
+    expect(currentSlotIndex(days, "2026-06-22T15:00")).toBe(1); // 6/22 が当日
   });
 });

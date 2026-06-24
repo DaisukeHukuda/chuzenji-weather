@@ -91,6 +91,7 @@ export function renderMatrix(host: HTMLElement, cols: Column[]): void {
     for (const c of cols) {
       const cellEl = document.createElement("div");
       cellEl.className = "data-cell";
+      if (c.isPast) cellEl.classList.add("past");
       cellEl.setAttribute("data-col", "");
       const v = r.cell(c);
       if (v.bg) cellEl.style.background = v.bg;
