@@ -3,7 +3,7 @@ import { buildColumns } from "./aggregate";
 import { renderMatrix } from "./render";
 import { RefreshController } from "./refresh";
 import { REFRESH_INTERVAL_MS, type Granularity } from "./config";
-import { formatCountdown, currentSlotIndex } from "./datetime";
+import { formatCountdown, currentSlotIndex, monthDayLabel } from "./datetime";
 import type { ForecastResponse } from "./types";
 
 const host = document.getElementById("matrix-host")!;
@@ -25,27 +25,45 @@ function nowIso(): string {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
-function draw(): void {
+const CELL_W = 56; // .data-cell の幅(px)
+
+// keepScroll=true のときは横スクロール位置（列）を維持（自動更新で現在位置に戻さないため）
+function draw(keepScroll: boolean): void {
   if (!lastData) return;
+  const prevScroll = host.querySelector<HTMLElement>(".scroller")?.scrollLeft ?? 0;
   const cols = buildColumns(lastData, current);
   lastStartIsos = cols.map((c) => c.startIso);
   // 現在のスロットを判定し、それより前の列を「過去」として印付け（renderでグレー表示）
   const curr = currentSlotIndex(lastStartIsos, nowIso());
   cols.forEach((c, i) => { c.isPast = curr > 0 && i < curr; });
   renderMatrix(host, cols);
-  scrollToCurrent(curr);
+  // keepScroll: 直前に左端だった列を維持。それ以外: 現在時刻の列へ。
+  scrollToIndex(keepScroll ? Math.round(prevScroll / CELL_W) : curr);
+  updateDatebar();
 }
 
-// 現在の時間の列が左端に来るよう横スクロールする
-function scrollToCurrent(curr: number): void {
+// 上部の日付バー: 左端に見えている列の月日を表示（1時間・半日のみ。1日は各列に日付があるので非表示）
+function updateDatebar(): void {
+  const bar = document.getElementById("datebar")!;
+  if (current === "1d" || lastStartIsos.length === 0) { bar.classList.add("hidden"); return; }
+  const scrollLeft = host.querySelector<HTMLElement>(".scroller")?.scrollLeft ?? 0;
+  const cell = host.querySelector<HTMLElement>('[data-row="time"] [data-col]');
+  const cw = cell?.getBoundingClientRect().width || 56;
+  const idx = Math.max(0, Math.min(lastStartIsos.length - 1, Math.floor(scrollLeft / cw + 0.001)));
+  bar.textContent = monthDayLabel(lastStartIsos[idx]!);
+  bar.classList.remove("hidden");
+}
+
+// 指定した列番号が左端に来るよう横スクロール。
+// getBoundingClientRect で同期的にレイアウトを確定させてから即設定する
+// （rAFはプレビュー等の非表示タブで発火しないため使わない。再描画直後でも0クランプされない）。
+function scrollToIndex(idx: number): void {
   const scroller = host.querySelector<HTMLElement>(".scroller");
   if (!scroller) return;
-  requestAnimationFrame(() => {
-    if (curr <= 0) { scroller.scrollLeft = 0; return; }
-    const cells = host.querySelectorAll<HTMLElement>('[data-row="time"] [data-col]');
-    const cellW = cells[0]?.getBoundingClientRect().width ?? 56;
-    scroller.scrollLeft = curr * cellW;
-  });
+  const cell = host.querySelector<HTMLElement>('[data-row="time"] [data-col]');
+  const cellW = cell?.getBoundingClientRect().width ?? CELL_W;
+  scroller.scrollLeft = Math.max(0, idx) * cellW;
+  updateDatebar();
 }
 
 function setUpdatedNow(): void {
@@ -61,12 +79,14 @@ function updateCountdown(): void {
 
 async function load(): Promise<void> {
   try {
+    const wasEmpty = lastData === null;
     lastData = await fetchForecast();
     staleEl.classList.add("hidden");
     setUpdatedNow();
     nextAt = Date.now() + REFRESH_INTERVAL_MS;
     updateCountdown();
-    draw();
+    // 初回のみ現在時刻へスクロール。以降の自動/手動更新は位置を維持する。
+    draw(!wasEmpty);
   } catch (e) {
     // 直近データは保持したまま、古い旨を表示
     staleEl.classList.remove("hidden");
@@ -81,15 +101,18 @@ tabsEl.querySelectorAll("button").forEach((btn) => {
     tabsEl.querySelectorAll("button").forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
     current = btn.getAttribute("data-g") as Granularity;
-    draw();
+    draw(false); // タブ切替時は現在時刻へスクロール
   });
 });
+
+// 横スクロールに追従して日付バーを更新（.scroller は再描画で作り直されるので capture で拾う）
+host.addEventListener("scroll", () => updateDatebar(), true);
 
 refreshBtn.addEventListener("click", () => controller.refreshNow());
 
 // 「現在時刻に戻る」: 現在のスロット列が左端に来るよう再スクロール
 document.getElementById("now-btn")!.addEventListener("click", () => {
-  scrollToCurrent(currentSlotIndex(lastStartIsos, nowIso()));
+  scrollToIndex(currentSlotIndex(lastStartIsos, nowIso()));
 });
 
 // 下スワイプでページ全体を更新（プル・トゥ・リフレッシュ）

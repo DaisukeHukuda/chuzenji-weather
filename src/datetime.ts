@@ -27,6 +27,13 @@ export function dayLabel(s: string): string {
   return `${mo}/${d}（${wd}）`;
 }
 
+// 上部の日付バー用（"6月24日（水）"）
+export function monthDayLabel(s: string): string {
+  const { y, mo, d } = parseLocalIso(s);
+  const wd = WEEKDAYS[new Date(y, mo - 1, d).getDay()];
+  return `${mo}月${d}日（${wd}）`;
+}
+
 // 残りミリ秒を M:SS 形式へ（負値は 0:00 に丸める）
 export function formatCountdown(remainingMs: number): string {
   const totalSec = Math.max(0, Math.floor(remainingMs / 1000));

@@ -33,6 +33,11 @@ body { margin:0; position: fixed; inset: 0; font-family: system-ui, -apple-syste
   border-radius:6px; padding:4px 8px; margin-top:6px; }
 .hidden { display:none; }
 
+/* 横スクロールに追従する日付バー（1時間・半日表示用） */
+.datebar { flex: 0 0 auto; margin: 8px 2px 0; padding: 5px 10px;
+  background: var(--accent); color: #fff; border-radius: 6px;
+  font-size: 13px; font-weight: 700; text-align: center; letter-spacing: .02em; }
+
 /* 表は残りの縦スペースを埋める */
 #matrix-host { flex: 1 1 auto; min-height: 0; display: flex; margin-top: 8px; }
 

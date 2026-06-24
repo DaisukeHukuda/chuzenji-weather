@@ -1,6 +1,6 @@
 // test/datetime.test.ts
 import { describe, it, expect } from "vitest";
-import { parseLocalIso, hourLabel, dayKey, dayLabel, sunLabel, formatCountdown, currentSlotIndex } from "../src/datetime";
+import { parseLocalIso, hourLabel, dayKey, dayLabel, monthDayLabel, sunLabel, formatCountdown, currentSlotIndex } from "../src/datetime";
 
 describe("datetime", () => {
   it("parseLocalIso は年月日時分を返す", () => {
@@ -20,6 +20,9 @@ describe("datetime", () => {
     expect(dayLabel("2026-06-21T09:00")).toBe("6/21（日）");
     // 2026-06-22 は月曜
     expect(dayLabel("2026-06-22T00:00")).toBe("6/22（月）");
+  });
+  it("monthDayLabel は M月D日（曜）", () => {
+    expect(monthDayLabel("2026-06-24T18:00")).toBe("6月24日（水）");
   });
   it("sunLabel は 日の出・日の入りを改行2段で返す", () => {
     expect(sunLabel("2026-06-21T04:30", "2026-06-21T19:05")).toBe("4:30\n19:05");
