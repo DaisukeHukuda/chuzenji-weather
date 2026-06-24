@@ -43,14 +43,9 @@ body { margin:0; position: fixed; inset: 0; font-family: system-ui, -apple-syste
 .label-cell { flex:1 1 0; min-height:30px; display:flex; align-items:center; justify-content:center;
   text-align:center; white-space:pre-line; line-height:1.15; padding:0 4px;
   font-size:12px; color:#555; border-bottom:1px solid #f1f1f1; }
-.label-cell.corner { flex:0 0 26px; min-height:0; background:#f3f4f6; border-bottom:1px solid var(--line); }
 .scroller { flex:1; min-height:0; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain; touch-action: pan-x; }
 .grid { display:flex; flex-direction:column; height:100%; width:max-content; min-width:100%; }
-.day-row { flex:0 0 26px; display:flex; }
-.day-cell { display:flex; align-items:center; justify-content:center;
-  font-size:12px; font-weight:700; color:#333; background:#f3f4f6;
-  border-left:1px solid #e5e7eb; border-bottom:1px solid var(--line); }
 .data-row { flex:1 1 0; min-height:30px; display:flex; }
 .data-cell { flex:0 0 56px; display:flex; align-items:center; justify-content:center; text-align:center;
   font-size:15px; border-bottom:1px solid #f1f1f1; border-left:1px solid #f6f6f6; }
@@ -69,3 +64,8 @@ body { margin:0; position: fixed; inset: 0; font-family: system-ui, -apple-syste
 .tabs button { flex:1; font-size:15px; padding:13px 0; border:none; border-radius:8px;
   background:#eef2f7; color:#333; font-weight:600; }
 .tabs button.active { background: var(--accent); color:#fff; }
+
+/* タブ下の「現在時刻に戻る」ボタン（横幅100%） */
+.now-btn { flex: 0 0 auto; width:100%; margin-top:6px; padding:11px 0; border:1px solid var(--line);
+  border-radius:8px; background:#fff; color:var(--accent); font-size:14px; font-weight:600; }
+.now-btn:active { background:#eef2f7; }

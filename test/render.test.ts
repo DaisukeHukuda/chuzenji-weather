@@ -51,10 +51,9 @@ describe("renderMatrix", () => {
     expect(host.querySelectorAll("[data-col]").length).toBe(0);
   });
 
-  it("日ごとの見出し(group)を列上部に表示し、同じ日は1つにまとめる", () => {
+  it("最上段の日付見出しバンドは描画しない", () => {
     renderMatrix(host, cols);
-    const groups = host.querySelectorAll("[data-daygroup]");
-    expect(groups.length).toBe(1); // 両列とも 6/21（日）
-    expect(groups[0]!.textContent).toBe("6/21（日）");
+    expect(host.querySelector("[data-daygroup]")).toBeNull();
+    expect(host.querySelector(".day-row")).toBeNull();
   });
 });

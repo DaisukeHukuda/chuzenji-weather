@@ -16,6 +16,7 @@ const refreshBtn = document.getElementById("refresh-btn")!;
 let current: Granularity = "1h";
 let lastData: ForecastResponse | null = null;
 let nextAt = Date.now() + REFRESH_INTERVAL_MS;
+let lastStartIsos: string[] = []; // 直近描画した各列の開始ISO（「現在時刻に戻る」用）
 
 // 現在時刻をローカルのゼロ詰めISO（"YYYY-MM-DDTHH:MM"）で返す
 function nowIso(): string {
@@ -27,8 +28,9 @@ function nowIso(): string {
 function draw(): void {
   if (!lastData) return;
   const cols = buildColumns(lastData, current);
+  lastStartIsos = cols.map((c) => c.startIso);
   // 現在のスロットを判定し、それより前の列を「過去」として印付け（renderでグレー表示）
-  const curr = currentSlotIndex(cols.map((c) => c.startIso), nowIso());
+  const curr = currentSlotIndex(lastStartIsos, nowIso());
   cols.forEach((c, i) => { c.isPast = curr > 0 && i < curr; });
   renderMatrix(host, cols);
   scrollToCurrent(curr);
@@ -84,6 +86,11 @@ tabsEl.querySelectorAll("button").forEach((btn) => {
 });
 
 refreshBtn.addEventListener("click", () => controller.refreshNow());
+
+// 「現在時刻に戻る」: 現在のスロット列が左端に来るよう再スクロール
+document.getElementById("now-btn")!.addEventListener("click", () => {
+  scrollToCurrent(currentSlotIndex(lastStartIsos, nowIso()));
+});
 
 // 下スワイプでページ全体を更新（プル・トゥ・リフレッシュ）
 function setupPullToRefresh(): void {
