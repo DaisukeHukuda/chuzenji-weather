@@ -36,6 +36,8 @@ export interface Column {
   group: string; // 日や月の区切り見出し（"6/21（日）" / "2026年6月"）
   sunLabel: string | null; // 日の出/日の入り（"5:30 / 19:00"）
   weatherCode: number | null;
+  amCode?: number | null; // daily系: 午前の代表天気コード（2週間表示の斜め分割用）
+  pmCode?: number | null; // daily系: 午後の代表天気コード
   temp: number | null; // 代表気温（hourly系の気温・色の元）
   tempMax: number | null; // daily系のみ
   tempMin: number | null; // daily系のみ

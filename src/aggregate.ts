@@ -25,6 +25,26 @@ function avg1(nums: number[]): number | null {
   return v.length ? Math.round((v.reduce((a, b) => a + b, 0) / v.length) * 10) / 10 : null;
 }
 
+// hourly から各日の午前(6-11時)/午後(12-17時)の代表天気コード（最大=悪天寄り）を求める
+function amPmByDay(res: ForecastResponse): Map<string, { am: number | null; pm: number | null }> {
+  const acc = new Map<string, { am: number[]; pm: number[] }>();
+  res.hourly.time.forEach((t, i) => {
+    const h = parseLocalIso(t).h;
+    const k = dayKey(t);
+    let e = acc.get(k);
+    if (!e) { e = { am: [], pm: [] }; acc.set(k, e); }
+    const code = res.hourly.weather_code[i];
+    if (code == null) return;
+    if (h >= 6 && h <= 11) e.am.push(code);
+    else if (h >= 12 && h <= 17) e.pm.push(code);
+  });
+  const out = new Map<string, { am: number | null; pm: number | null }>();
+  for (const [k, e] of acc) {
+    out.set(k, { am: e.am.length ? Math.max(...e.am) : null, pm: e.pm.length ? Math.max(...e.pm) : null });
+  }
+  return out;
+}
+
 // daily の日の出/日の入りを dayKey で引けるMapに
 function sunByDay(res: ForecastResponse): Map<string, string | null> {
   const m = new Map<string, string | null>();
@@ -123,17 +143,21 @@ function buildHalfDay(res: ForecastResponse, sun: Map<string, string | null>): C
 function buildDaily(res: ForecastResponse, days: number): Column[] {
   const d = res.daily;
   const uvAvg = uvAvgByDay(res); // hourlyから日ごとのUV平均
+  const amPm = amPmByDay(res); // hourlyから日ごとの午前/午後天気
   const n = Math.min(d.time.length, days);
   const cols: Column[] = [];
   for (let i = 0; i < n; i++) {
     const iso = d.time[i]! + "T00:00";
     const p = parseLocalIso(iso);
+    const ap = amPm.get(dayKey(iso));
     cols.push({
       startIso: iso,
       timeLabel: dayLabel(iso),
       group: `${p.y}年${p.mo}月`,
       sunLabel: sunLabel(d.sunrise[i] ?? null, d.sunset[i] ?? null),
       weatherCode: d.weather_code[i] ?? null,
+      amCode: ap?.am ?? null,
+      pmCode: ap?.pm ?? null,
       temp: null,
       tempMax: d.temperature_2m_max[i] ?? null,
       tempMin: d.temperature_2m_min[i] ?? null,

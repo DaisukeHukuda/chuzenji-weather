@@ -34,6 +34,14 @@ export function monthDayLabel(s: string): string {
   return `${mo}月${d}日（${wd}）`;
 }
 
+// 日付バーの部品（土=sat, 日=sun で色分けするため種別も返す）
+export interface MdParts { md: string; wd: string; kind: "" | "sat" | "sun"; }
+export function mdParts(s: string): MdParts {
+  const { y, mo, d } = parseLocalIso(s);
+  const w = new Date(y, mo - 1, d).getDay();
+  return { md: `${mo}/${d}`, wd: WEEKDAYS[w]!, kind: w === 0 ? "sun" : w === 6 ? "sat" : "" };
+}
+
 // 残りミリ秒を M:SS 形式へ（負値は 0:00 に丸める）
 export function formatCountdown(remainingMs: number): string {
   const totalSec = Math.max(0, Math.floor(remainingMs / 1000));

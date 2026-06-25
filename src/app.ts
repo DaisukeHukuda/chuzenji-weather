@@ -3,7 +3,7 @@ import { buildColumns } from "./aggregate";
 import { renderMatrix } from "./render";
 import { RefreshController } from "./refresh";
 import { REFRESH_INTERVAL_MS, type Granularity } from "./config";
-import { formatCountdown, currentSlotIndex, monthDayLabel } from "./datetime";
+import { formatCountdown, currentSlotIndex, mdParts } from "./datetime";
 import type { ForecastResponse } from "./types";
 
 const host = document.getElementById("matrix-host")!;
@@ -50,7 +50,8 @@ function updateDatebar(): void {
   const cell = host.querySelector<HTMLElement>('[data-row="time"] [data-col]');
   const cw = cell?.getBoundingClientRect().width || 56;
   const idx = Math.max(0, Math.min(lastStartIsos.length - 1, Math.floor(scrollLeft / cw + 0.001)));
-  bar.textContent = monthDayLabel(lastStartIsos[idx]!);
+  const p = mdParts(lastStartIsos[idx]!);
+  bar.innerHTML = `${p.md}<span class="wd wd-${p.kind || "none"}">(${p.wd})</span>`;
   bar.classList.remove("hidden");
 }
 

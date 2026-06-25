@@ -1,13 +1,15 @@
 // src/render.ts
 import type { Column } from "./types";
-import { weatherIcon } from "./weather-code";
-import { compass16, arrowRotation } from "./wind";
+import { weatherIconSvg, weatherIconSvgSplit, windArrowSvg } from "./weather-icon";
+import { compass16 } from "./wind";
 import { tempColor, windColor } from "./colors";
+
+interface CellOut { text?: string; html?: string; bg?: string; fg?: string; }
 
 interface RowDef {
   key: string;
   label: string;
-  cell: (c: Column) => { text: string; bg?: string; fg?: string; rotate?: number | null };
+  cell: (c: Column) => CellOut;
 }
 
 const fmt = (v: number | null, suffix = ""): string =>
@@ -25,10 +27,18 @@ function uvText(uv: number | null, uvAvg: number | null): string {
   return a === m ? String(m) : `${m}（${a}）`;
 }
 
+// 天気アイコン: daily系(amCode/pmCode あり)は午前/午後の斜め分割、それ以外は単一タイル
+function weatherCell(c: Column): string {
+  if (c.amCode != null || c.pmCode != null) {
+    return weatherIconSvgSplit(c.amCode ?? null, c.pmCode ?? null);
+  }
+  return weatherIconSvg(c.weatherCode);
+}
+
 const ROWS: RowDef[] = [
   { key: "time", label: "時刻", cell: (c) => ({ text: c.timeLabel }) },
-  { key: "weather", label: "天気", cell: (c) => ({ text: weatherIcon(c.weatherCode) }) },
-  { key: "windDir", label: "風向", cell: (c) => ({ text: "↑", rotate: arrowRotation(c.windDirDeg) }) },
+  { key: "weather", label: "天気", cell: (c) => ({ html: weatherCell(c) }) },
+  { key: "windDir", label: "風向", cell: (c) => ({ html: windArrowSvg(c.windDirDeg, c.windSpeed) }) },
   { key: "windDirName", label: "", cell: (c) => ({ text: compass16(c.windDirDeg) }) },
   {
     key: "windSpeed", label: "風速 m/s",
@@ -60,6 +70,10 @@ export function renderMatrix(host: HTMLElement, cols: Column[]): void {
   const table = document.createElement("div");
   table.className = "matrix";
 
+  // 各列が「日付の変わり目」か（境目に区切り線を入れるため）
+  const dayStart = cols.map((c, i) =>
+    i > 0 && c.startIso.slice(0, 10) !== cols[i - 1]!.startIso.slice(0, 10));
+
   // 固定ラベル列
   const labelCol = document.createElement("div");
   labelCol.className = "label-col";
@@ -82,26 +96,22 @@ export function renderMatrix(host: HTMLElement, cols: Column[]): void {
     const rowEl = document.createElement("div");
     rowEl.className = "data-row";
     rowEl.setAttribute("data-row", r.key);
-    for (const c of cols) {
+    cols.forEach((c, ci) => {
       const cellEl = document.createElement("div");
       cellEl.className = "data-cell";
       if (c.isPast) cellEl.classList.add("past");
+      if (dayStart[ci]) cellEl.classList.add("day-start");
       cellEl.setAttribute("data-col", "");
       const v = r.cell(c);
       if (v.bg) cellEl.style.background = v.bg;
       if (v.fg) cellEl.style.color = v.fg;
-      if (v.rotate != null) {
-        // 矢印はセル中央を保ったまま内側の要素だけ回転させる
-        const arrow = document.createElement("span");
-        arrow.className = "arrow";
-        arrow.textContent = v.text;
-        arrow.style.transform = `rotate(${v.rotate}deg)`;
-        cellEl.appendChild(arrow);
+      if (v.html !== undefined) {
+        cellEl.innerHTML = v.html;
       } else {
-        cellEl.textContent = v.text;
+        cellEl.textContent = v.text ?? "";
       }
       rowEl.appendChild(cellEl);
-    }
+    });
     grid.appendChild(rowEl);
   }
   scroller.appendChild(grid);

@@ -33,10 +33,13 @@ body { margin:0; position: fixed; inset: 0; font-family: system-ui, -apple-syste
   border-radius:6px; padding:4px 8px; margin-top:6px; }
 .hidden { display:none; }
 
-/* 横スクロールに追従する日付バー（1時間・半日表示用） */
-.datebar { flex: 0 0 auto; margin: 8px 2px 0; padding: 5px 10px;
-  background: var(--accent); color: #fff; border-radius: 6px;
-  font-size: 13px; font-weight: 700; text-align: center; letter-spacing: .02em; }
+/* 横スクロールに追従する日付バー（1時間・半日表示用・WeatherNews風） */
+.datebar { flex: 0 0 auto; margin: 8px 2px 0; padding: 5px 12px;
+  background: #eef2f7; color: #333; border-radius: 6px;
+  font-size: 14px; font-weight: 700; text-align: left; letter-spacing: .02em; }
+.datebar .wd { margin-left: 3px; }
+.datebar .wd-sat { color: #2f7fed; }
+.datebar .wd-sun { color: #e23b3b; }
 
 /* 表は残りの縦スペースを埋める */
 #matrix-host { flex: 1 1 auto; min-height: 0; display: flex; margin-top: 8px; }
@@ -60,10 +63,16 @@ body { margin:0; position: fixed; inset: 0; font-family: system-ui, -apple-syste
 
 /* 視認性: 行ごとにサイズ最適化 */
 [data-row="time"] .data-cell { font-weight:600; font-size:13px; line-height:1.1; }
-[data-row="weather"] .data-cell { font-size:26px; }
-[data-row="windDir"] .arrow { display:inline-block; font-size:22px; line-height:1; }
 [data-row="windDirName"] .data-cell { font-size:12px; color:#444; }
 [data-row="sun"] .data-cell { white-space:pre-line; line-height:1.25; font-size:12px; color:#444; }
+
+/* SVGアイコン（WeatherNews風タイル天気＋風向矢印） */
+svg.wi { width:32px; height:32px; border-radius:7px; display:block; }
+svg.wind { width:24px; height:24px; display:block; }
+.wi-na { color:#bbb; }
+
+/* 日付の変わり目の区切り線 */
+.data-cell.day-start { border-left:2px solid #c3ccd6; }
 
 /* 時間切り替えタブは画面下 */
 .tabs { flex: 0 0 auto; display:flex; gap:4px; margin-top:8px; }
