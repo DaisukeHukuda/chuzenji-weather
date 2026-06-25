@@ -61,8 +61,11 @@ body { margin:0; position: fixed; inset: 0; font-family: system-ui, -apple-syste
   border-bottom:1px solid #e2e8f0; }
 .date-seg { display:flex; align-items:center; min-width:0; }
 .date-seg + .date-seg { border-left:2px solid #c3ccd6; }
-.date-lbl { position:sticky; left:0; padding:0 8px; white-space:nowrap;
-  font-size:15px; font-weight:700; color:#333; }
+/* 日付ラベルは2段でコンパクト(狭い半日列でも見切れない)。左端にsticky。 */
+.date-lbl { position:sticky; left:0; padding:0 5px; display:flex; flex-direction:column;
+  align-items:center; line-height:1.05; font-weight:700; color:#333; white-space:nowrap; }
+.date-lbl .d-md { font-size:13px; }
+.date-lbl .d-wd { font-size:11px; }
 .data-cell { flex:0 0 56px; display:flex; align-items:center; justify-content:center; text-align:center;
   font-size:15px; border-bottom:1px solid #f1f1f1; border-left:1px solid #f6f6f6; }
 /* 過去の時間帯はグレーアウト */

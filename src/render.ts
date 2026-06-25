@@ -116,7 +116,8 @@ export function renderMatrix(host: HTMLElement, cols: Column[], showDateRow: boo
       const lbl = document.createElement("div");
       lbl.className = "date-lbl";
       const p = mdParts(cols[i]!.startIso);
-      lbl.innerHTML = `${p.md}<span class="wd wd-${p.kind || "none"}">(${p.wd})</span>`;
+      // 2段（上=月日, 下=曜日）でコンパクトに。狭い半日の列でも見切れないように。
+      lbl.innerHTML = `<span class="d-md">${p.md}</span><span class="d-wd wd-${p.kind || "none"}">(${p.wd})</span>`;
       seg.appendChild(lbl);
       dateRow.appendChild(seg);
       i = j;
