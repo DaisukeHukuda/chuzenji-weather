@@ -48,7 +48,9 @@ body { margin:0; position: fixed; inset: 0; font-family: system-ui, -apple-syste
   border-right:2px solid var(--line); background:#fafafa; }
 .label-cell { flex:1 1 0; min-height:30px; display:flex; align-items:center; justify-content:center;
   text-align:center; white-space:pre-line; line-height:1.2; padding:0 4px;
-  font-size:14px; font-weight:600; color:#444; border-bottom:1px solid #f1f1f1; }
+  font-size:15px; font-weight:600; color:#444; border-bottom:1px solid #f1f1f1; }
+/* 例外: 日の出/日の入の項目名は2段なので小さめ */
+.label-sun { font-size:12px; }
 .scroller { flex:1; min-height:0; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain; touch-action: pan-x; }
 .grid { display:flex; flex-direction:column; height:100%; width:max-content; min-width:100%; }
@@ -57,15 +59,16 @@ body { margin:0; position: fixed; inset: 0; font-family: system-ui, -apple-syste
 .date-row { flex:1 1 0; min-height:28px; display:block; background:#f1f5fb;
   border-bottom:1px solid #e2e8f0; }
 .date-sticky { position:sticky; left:0; display:inline-flex; align-items:center; height:100%;
-  padding:0 8px; font-size:14px; font-weight:700; color:#333; background:#f1f5fb; }
+  padding:0 8px; font-size:15px; font-weight:700; color:#333; background:#f1f5fb; }
 .data-cell { flex:0 0 56px; display:flex; align-items:center; justify-content:center; text-align:center;
   font-size:15px; border-bottom:1px solid #f1f1f1; border-left:1px solid #f6f6f6; }
 /* 過去の時間帯はグレーアウト */
 .data-cell.past { opacity: 0.38; }
 
-/* 視認性: 行ごとにサイズ最適化 */
-[data-row="time"] .data-cell { font-weight:600; font-size:13px; line-height:1.1; }
-[data-row="windDirName"] .data-cell { font-size:12px; color:#444; }
+/* 数字・項目名は統一サイズ(15px)。日の出/日の入のみ例外で小さめ2段。 */
+[data-row="time"] .data-cell { font-weight:600; }
+[data-row="windDirName"] .data-cell { color:#444; }
+[data-row="temp"] .data-cell { white-space:pre-line; line-height:1.15; } /* 1日の最高/最低を2段表示 */
 [data-row="sun"] .data-cell { white-space:pre-line; line-height:1.25; font-size:12px; color:#444; }
 
 /* SVGアイコン（WeatherNews風タイル天気＋風向矢印） */

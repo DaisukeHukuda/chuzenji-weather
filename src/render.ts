@@ -18,13 +18,10 @@ const fmt = (v: number | null, suffix = ""): string =>
 // 小数1桁に丸めた数値（整数も小数1桁で）
 const round1 = (v: number): number => Math.round(v * 10) / 10;
 
-// UVセル: 代表値（最大）に、平均が異なる場合だけ括弧で平均を併記
+// UVセル: 平均値のみ表示（半日・1日は集計平均、1時間はその時刻の値）
 function uvText(uv: number | null, uvAvg: number | null): string {
-  if (uv == null) return "—";
-  const m = round1(uv);
-  if (uvAvg == null) return String(m);
-  const a = round1(uvAvg);
-  return a === m ? String(m) : `${m}（${a}）`;
+  const v = uvAvg != null ? uvAvg : uv;
+  return v == null ? "—" : String(round1(v));
 }
 
 // 天気アイコン: daily系(amCode/pmCode あり)は午前/午後の斜め分割、それ以外は単一タイル
@@ -56,7 +53,8 @@ const ROWS: RowDef[] = [
   {
     key: "temp", label: "気温 ℃",
     cell: (c) => {
-      const text = c.tempMax != null ? `${fmt(c.tempMax)}/${fmt(c.tempMin)}` : fmt(c.temp);
+      // 1日表示(最高/最低あり)は上段=最高・下段=最低の2段、それ以外は単一値
+      const text = c.tempMax != null ? `${fmt(c.tempMax)}\n${fmt(c.tempMin)}` : fmt(c.temp);
       const col = tempColor(c.tempMax ?? c.temp);
       return { text, bg: col.bg, fg: col.fg };
     },
@@ -87,7 +85,7 @@ export function renderMatrix(host: HTMLElement, cols: Column[], showDateRow: boo
   }
   for (const r of ROWS) {
     const cell = document.createElement("div");
-    cell.className = "label-cell";
+    cell.className = "label-cell label-" + r.key;
     cell.textContent = r.label;
     labelCol.appendChild(cell);
   }
