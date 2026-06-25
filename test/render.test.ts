@@ -28,32 +28,43 @@ describe("renderMatrix", () => {
   });
 
   it("列数ぶんのデータ列を描画し、固定ラベル列を持つ", () => {
-    renderMatrix(host, cols);
+    renderMatrix(host, cols, false);
     // 1行(時刻行)あたりのデータセル数 = 列数
     expect(host.querySelectorAll('[data-row="time"] [data-col]').length).toBe(2);
     expect(host.querySelector("[data-label-col]")).not.toBeNull();
   });
 
   it("気温セルに値が入る", () => {
-    renderMatrix(host, cols);
+    renderMatrix(host, cols, false);
     const temps = host.querySelectorAll('[data-row="temp"] [data-col]');
     expect(temps[0]!.textContent).toContain("16");
   });
 
   it("再描画で既存内容を置き換える（重複しない）", () => {
-    renderMatrix(host, cols);
-    renderMatrix(host, cols);
+    renderMatrix(host, cols, false);
+    renderMatrix(host, cols, false);
     expect(host.querySelectorAll('[data-row="temp"]').length).toBe(1);
   });
 
   it("空配列でも例外を投げず、データ列0", () => {
-    renderMatrix(host, []);
+    renderMatrix(host, [], false);
     expect(host.querySelectorAll("[data-col]").length).toBe(0);
   });
 
   it("最上段の日付見出しバンドは描画しない", () => {
-    renderMatrix(host, cols);
+    renderMatrix(host, cols, false);
     expect(host.querySelector("[data-daygroup]")).toBeNull();
     expect(host.querySelector(".day-row")).toBeNull();
+  });
+
+  it("showDateRow=true で左端固定の日付行(日)を追加する", () => {
+    renderMatrix(host, cols, true);
+    expect(host.querySelector(".date-row .date-sticky")).not.toBeNull();
+    const labels = [...host.querySelectorAll("[data-label-col] .label-cell")].map((e) => e.textContent);
+    expect(labels[0]).toBe("日");
+  });
+  it("showDateRow=false では日付行を描画しない", () => {
+    renderMatrix(host, cols, false);
+    expect(host.querySelector(".date-row")).toBeNull();
   });
 });

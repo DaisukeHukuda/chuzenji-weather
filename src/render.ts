@@ -36,7 +36,7 @@ function weatherCell(c: Column): string {
 }
 
 const ROWS: RowDef[] = [
-  { key: "time", label: "時刻", cell: (c) => ({ text: c.timeLabel }) },
+  { key: "time", label: "時", cell: (c) => ({ text: c.timeLabel }) },
   { key: "weather", label: "天気", cell: (c) => ({ html: weatherCell(c) }) },
   { key: "windDir", label: "風向", cell: (c) => ({ html: windArrowSvg(c.windDirDeg, c.windSpeed) }) },
   { key: "windDirName", label: "", cell: (c) => ({ text: compass16(c.windDirDeg) }) },
@@ -65,7 +65,8 @@ const ROWS: RowDef[] = [
   { key: "sun", label: "日の出\n日の入", cell: (c) => ({ text: c.sunLabel ?? "—" }) },
 ];
 
-export function renderMatrix(host: HTMLElement, cols: Column[]): void {
+// showDateRow=true のとき、最上段に「日」行（左端固定の日付）を追加する（1時間・半日用）
+export function renderMatrix(host: HTMLElement, cols: Column[], showDateRow: boolean): void {
   host.replaceChildren();
   const table = document.createElement("div");
   table.className = "matrix";
@@ -78,6 +79,12 @@ export function renderMatrix(host: HTMLElement, cols: Column[]): void {
   const labelCol = document.createElement("div");
   labelCol.className = "label-col";
   labelCol.setAttribute("data-label-col", "");
+  if (showDateRow) {
+    const dcell = document.createElement("div");
+    dcell.className = "label-cell";
+    dcell.textContent = "日";
+    labelCol.appendChild(dcell);
+  }
   for (const r of ROWS) {
     const cell = document.createElement("div");
     cell.className = "label-cell";
@@ -91,6 +98,16 @@ export function renderMatrix(host: HTMLElement, cols: Column[]): void {
   scroller.className = "scroller";
   const grid = document.createElement("div");
   grid.className = "grid";
+
+  // 「日」行: 1つの日付要素を左端に position:sticky で固定（テキストはapp側がスクロールに応じて更新）
+  if (showDateRow) {
+    const dateRow = document.createElement("div");
+    dateRow.className = "date-row";
+    const sticky = document.createElement("div");
+    sticky.className = "date-sticky";
+    dateRow.appendChild(sticky);
+    grid.appendChild(dateRow);
+  }
 
   for (const r of ROWS) {
     const rowEl = document.createElement("div");
