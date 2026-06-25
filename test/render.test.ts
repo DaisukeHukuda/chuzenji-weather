@@ -57,9 +57,11 @@ describe("renderMatrix", () => {
     expect(host.querySelector(".day-row")).toBeNull();
   });
 
-  it("showDateRow=true で左端固定の日付行(日)を追加する", () => {
+  it("showDateRow=true で日ごとのsticky日付ラベルを持つ「日」行を追加する", () => {
     renderMatrix(host, cols, true);
-    expect(host.querySelector(".date-row .date-sticky")).not.toBeNull();
+    // cols は全て同じ日(6/21) → セグメント1つ・ラベル1つ
+    expect(host.querySelectorAll(".date-row .date-lbl").length).toBe(1);
+    expect(host.querySelector(".date-row .date-lbl")!.textContent).toContain("6/21");
     const labels = [...host.querySelectorAll("[data-label-col] .label-cell")].map((e) => e.textContent);
     expect(labels[0]).toBe("日");
   });

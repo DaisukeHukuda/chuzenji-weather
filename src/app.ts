@@ -3,7 +3,7 @@ import { buildColumns } from "./aggregate";
 import { renderMatrix } from "./render";
 import { RefreshController } from "./refresh";
 import { REFRESH_INTERVAL_MS, type Granularity } from "./config";
-import { formatCountdown, currentSlotIndex, mdParts } from "./datetime";
+import { formatCountdown, currentSlotIndex } from "./datetime";
 import type { ForecastResponse } from "./types";
 
 const host = document.getElementById("matrix-host")!;
@@ -39,19 +39,6 @@ function draw(keepScroll: boolean): void {
   renderMatrix(host, cols, current !== "1d"); // 1時間・半日は最上段に「日」行を表示
   // keepScroll: 直前に左端だった列を維持。それ以外: 現在時刻の列へ。
   scrollToIndex(keepScroll ? Math.round(prevScroll / CELL_W) : curr);
-  updateDateRow();
-}
-
-// 「日」行の日付: 左端に見えている列の月日を表示（スクロールに追従して更新）。1日表示には行が無い。
-function updateDateRow(): void {
-  const el = host.querySelector<HTMLElement>(".date-sticky");
-  if (!el || lastStartIsos.length === 0) return;
-  const scrollLeft = host.querySelector<HTMLElement>(".scroller")?.scrollLeft ?? 0;
-  const cell = host.querySelector<HTMLElement>('[data-row="time"] [data-col]');
-  const cw = cell?.getBoundingClientRect().width || 56;
-  const idx = Math.max(0, Math.min(lastStartIsos.length - 1, Math.floor(scrollLeft / cw + 0.001)));
-  const p = mdParts(lastStartIsos[idx]!);
-  el.innerHTML = `${p.md}<span class="wd wd-${p.kind || "none"}">(${p.wd})</span>`;
 }
 
 // 指定した列番号が左端に来るよう横スクロール。
@@ -63,7 +50,6 @@ function scrollToIndex(idx: number): void {
   const cell = host.querySelector<HTMLElement>('[data-row="time"] [data-col]');
   const cellW = cell?.getBoundingClientRect().width ?? CELL_W;
   scroller.scrollLeft = Math.max(0, idx) * cellW;
-  updateDateRow();
 }
 
 function setUpdatedNow(): void {
@@ -105,8 +91,6 @@ tabsEl.querySelectorAll("button").forEach((btn) => {
   });
 });
 
-// 横スクロールに追従して日付バーを更新（.scroller は再描画で作り直されるので capture で拾う）
-host.addEventListener("scroll", () => updateDateRow(), true);
 
 refreshBtn.addEventListener("click", () => controller.refreshNow());
 

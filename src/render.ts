@@ -3,6 +3,9 @@ import type { Column } from "./types";
 import { weatherIconSvg, weatherIconSvgSplit, windArrowSvg } from "./weather-icon";
 import { compass16 } from "./wind";
 import { tempColor, windColor } from "./colors";
+import { mdParts } from "./datetime";
+
+const CELL_W = 56; // .data-cell の幅(px)と一致させる
 
 interface CellOut { text?: string; html?: string; bg?: string; fg?: string; }
 
@@ -97,13 +100,27 @@ export function renderMatrix(host: HTMLElement, cols: Column[], showDateRow: boo
   const grid = document.createElement("div");
   grid.className = "grid";
 
-  // 「日」行: 1つの日付要素を左端に position:sticky で固定（テキストはapp側がスクロールに応じて更新）
+  // 「日」行: 日ごとのセグメントを作り、各日付ラベルを position:sticky で左端に固定する。
+  // 次の日のセグメントが来ると自然に入れ替わる（CSSのみ＝慣性スクロールでも空白にならない）。
   if (showDateRow) {
     const dateRow = document.createElement("div");
     dateRow.className = "date-row";
-    const sticky = document.createElement("div");
-    sticky.className = "date-sticky";
-    dateRow.appendChild(sticky);
+    let i = 0;
+    while (i < cols.length) {
+      const day = cols[i]!.startIso.slice(0, 10);
+      let j = i;
+      while (j < cols.length && cols[j]!.startIso.slice(0, 10) === day) j++;
+      const seg = document.createElement("div");
+      seg.className = "date-seg";
+      seg.style.flex = `0 0 ${(j - i) * CELL_W}px`;
+      const lbl = document.createElement("div");
+      lbl.className = "date-lbl";
+      const p = mdParts(cols[i]!.startIso);
+      lbl.innerHTML = `${p.md}<span class="wd wd-${p.kind || "none"}">(${p.wd})</span>`;
+      seg.appendChild(lbl);
+      dateRow.appendChild(seg);
+      i = j;
+    }
     grid.appendChild(dateRow);
   }
 

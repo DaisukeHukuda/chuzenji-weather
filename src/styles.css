@@ -55,11 +55,14 @@ body { margin:0; position: fixed; inset: 0; font-family: system-ui, -apple-syste
   overscroll-behavior: contain; touch-action: pan-x; }
 .grid { display:flex; flex-direction:column; height:100%; width:max-content; min-width:100%; }
 .data-row { flex:1 1 0; min-height:30px; display:flex; }
-/* 「日」行: 全幅の薄い行に、左端固定(sticky)の日付を載せる */
-.date-row { flex:1 1 0; min-height:28px; display:block; background:#f1f5fb;
+/* 「日」行: 日ごとのセグメントに日付ラベルを置き、各ラベルを左端sticky。
+   次の日のセグメントが来ると自然に入れ替わる（CSSのみ）。 */
+.date-row { flex:1 1 0; min-height:28px; display:flex; background:#f1f5fb;
   border-bottom:1px solid #e2e8f0; }
-.date-sticky { position:sticky; left:0; display:inline-flex; align-items:center; height:100%;
-  padding:0 8px; font-size:15px; font-weight:700; color:#333; background:#f1f5fb; }
+.date-seg { display:flex; align-items:center; min-width:0; }
+.date-seg + .date-seg { border-left:2px solid #c3ccd6; }
+.date-lbl { position:sticky; left:0; padding:0 8px; white-space:nowrap;
+  font-size:15px; font-weight:700; color:#333; }
 .data-cell { flex:0 0 56px; display:flex; align-items:center; justify-content:center; text-align:center;
   font-size:15px; border-bottom:1px solid #f1f1f1; border-left:1px solid #f6f6f6; }
 /* 過去の時間帯はグレーアウト */
